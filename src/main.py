@@ -1,5 +1,5 @@
 """
-Command line runner for the Music Recommender Simulation.
+Command-line runner for TasteTether.
 
 Runs the functional path end to end:
     load_songs -> recommend_songs (which uses score_song as the per-song judge)
@@ -16,7 +16,7 @@ def format_profile(profile: dict) -> str:
 def print_recommendations(profile: dict, recommendations) -> None:
     """Print recommendations in a clean, readable terminal layout."""
     divider = "-" * 64
-    print("\n🎵  Music Recommender — your top picks\n")
+    print("\n🎵  TasteTether — your top picks\n")
     print(f"Taste profile: {format_profile(profile)}")
     print(divider)
     for rank, (song, score, explanation) in enumerate(recommendations, start=1):
