@@ -1,43 +1,12 @@
 flowchart TD
-    CSV["data/songs.csv<br/>20 songs, 17 genres, 16 moods"]
-    PROFILE["Taste Profile (dict)<br/>genre, mood (categorical)<br/>energy, acousticness, valence, danceability (0–1 targets)"]
+    CSV["data/songs.csv<br/>20 fictional songs"] --> LOAD["load_songs()<br/>parse CSV into song dictionaries"]
+    PROFILE["Taste profile<br/>genre, mood, energy, valence,<br/>danceability, acousticness, tempo"] --> SCORE
+    LOAD --> SCORE["score_song()<br/>score each song and record reasons"]
 
-    CSV -->|"load_songs(): DictReader, id to int, 5 numeric to float"| SONGS["List of Song objects"]
+    GENRE["Genre<br/>exact 4.0, related family 2.0"] --> SCORE
+    MOOD["Mood<br/>exact 1.5, related family 0.75"] --> SCORE
+    NUMERIC["Energy 0.50 · valence 0.45<br/>danceability 0.40 · acousticness 0.35"] --> SCORE
+    TEMPO["Tempo 0.30<br/>normalize BPM before comparing"] --> SCORE
 
-    SONGS --> LOOP{"For each song"}
-    PROFILE --> LOOP
-
-    subgraph LOCAL["score_song() — LOCAL, per song"]
-        direction TB
-        GEN["genre_score x w_genre (3.0)<br/>exact 1.0 · cousin 0.5 · else 0"]
-        MOOD["mood_score x w_mood (1.5)<br/>exact 1.0 · cousin 0.5 · else 0"]
-        ENE["energy closeness x 1.0<br/>1 - abs(target - value)"]
-        ACO["acousticness closeness x 1.0"]
-        VAL["valence closeness x 1.0"]
-        DAN["danceability closeness x 0.5"]
-        SUM["score = sum of weighted sub-scores<br/>+ reasons[] (one per feature)"]
-        GEN --> SUM
-        MOOD --> SUM
-        ENE --> SUM
-        ACO --> SUM
-        VAL --> SUM
-        DAN --> SUM
-    end
-
-    LOOP --> LOCAL
-
-    subgraph GLOBAL["recommend_songs() — GLOBAL, all songs"]
-        direction TB
-        SORT["sort by score desc"]
-        TIE["tie-break by id asc"]
-        TOPK["select top-k"]
-        DIV["stretch: enforce genre diversity"]
-        SORT --> TIE --> TOPK --> DIV
-    end
-
-    SUM --> GLOBAL
-    GLOBAL --> OUT["Top-k recommendations<br/>(song, score, explanation)"]
-
-    FAM["Similarity Families (reverse-lookup, O(1))<br/>GENRE: mellow · pop_elec · rock_heavy · roots · groove<br/>MOOD: calm · upbeat · intense · somber · romantic"]
-    FAM -.-> GEN
-    FAM -.-> MOOD
+    SCORE --> RANK["recommend_songs()<br/>sort by score descending, then song ID"]
+    RANK --> TOP["Top-k songs<br/>score and explanation"]
