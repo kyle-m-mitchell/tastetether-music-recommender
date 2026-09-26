@@ -1,8 +1,8 @@
-# 🎧 Model Card: Music Recommender Simulation
+# TasteTether Model Card
 
 ## 1. Model Name  
 
-**TasteTether 1.0** — a content-based music recommender simulation.
+**TasteTether 1.0** — a deterministic content-based music recommender simulation built for CodePath AI110. It uses hand-set scoring rules rather than a trained model or a runtime AI service. [Cadence](https://github.com/kyle-m-mitchell/cadence-ai-music-companion) is the later, broader application.
 
 ---
 
